@@ -1,0 +1,111 @@
+document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+});
+
+function initApp() {
+    updateTime();
+    // 1分ごとに時計とデータを更新
+    setInterval(updateTime, 60000);
+    
+    // 現在地を取得して天気APIを叩く
+    requestLocationAndWeather();
+}
+
+function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('update-time').textContent = `最終更新: ${timeString}`;
+}
+
+function requestLocationAndWeather() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                document.getElementById('location-name').textContent = `GPS座標 (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
+                fetchWeather(lat, lon);
+            },
+            (error) => {
+                console.warn("位置情報の取得に失敗しました。デフォルト位置（東京駅）を使用します。", error);
+                document.getElementById('location-name').textContent = "東京駅周辺 (デフォルト)";
+                fetchWeather(35.6812, 139.7671);
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        );
+    } else {
+        document.getElementById('location-name').textContent = "東京駅周辺 (デフォルト)";
+        fetchWeather(35.6812, 139.7671);
+    }
+}
+
+async function fetchWeather(lat, lon) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability,precipitation&timezone=Asia%2FTokyo`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        const now = new Date();
+        const currentHourStr = now.toISOString().slice(0,14) + "00";
+        
+        let currentIndex = 0;
+        const times = data.hourly.time;
+        for (let i = 0; i < times.length; i++) {
+            const timeDate = new Date(times[i]);
+            if (timeDate >= now) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        const prob = data.hourly.precipitation_probability[currentIndex];
+        const amount = data.hourly.precipitation[currentIndex];
+
+        updateUI(prob, amount);
+
+    } catch (error) {
+        console.error("天気データの取得に失敗しました", error);
+        document.getElementById('status-message').textContent = "データ取得エラー";
+    }
+}
+
+function updateUI(probability, amount) {
+    const probEl = document.getElementById('rain-prob');
+    const amountEl = document.getElementById('rain-amount');
+    const statusCard = document.getElementById('alert-status-card');
+    const statusIcon = document.getElementById('status-icon');
+    const statusMessage = document.getElementById('status-message');
+    const statusDetail = document.getElementById('status-detail');
+
+    probEl.classList.add('fade-in');
+    
+    probEl.textContent = `${probability}%`;
+    amountEl.textContent = `${amount} mm/h`;
+
+    // クラスリセット
+    statusCard.className = 'card';
+    document.body.className = '';
+
+    if (probability >= 70 || amount >= 2.0) {
+        // 大雨特需アラート
+        statusCard.classList.add('status-danger');
+        document.body.classList.add('danger-mode');
+        statusIcon.textContent = "🚨";
+        statusMessage.textContent = "大雨特需 チャンス！";
+        statusDetail.textContent = "現在地周辺で強い雨が予測されています。雨宿り・帰宅客のタクシー需要が爆発的に増加します！";
+    } else if (probability >= 30 || amount >= 0.1) {
+        // 注意アラート
+        statusCard.classList.add('status-warning');
+        document.body.classList.add('warning-mode');
+        statusIcon.textContent = "⚠️";
+        statusMessage.textContent = "雨雲接近中 配車待機";
+        statusDetail.textContent = "パラパラと降り始める可能性があります。駅周辺など傘を持たない人が多い場所へ移動を推奨します。";
+    } else {
+        // 安全圏（降水なし）
+        statusCard.classList.add('status-safe');
+        statusIcon.textContent = "✅";
+        statusMessage.textContent = "通常営業・安全圏";
+        statusDetail.textContent = "現在地周辺で特段の需要増（雨雲など）は予測されていません。通常通り流し営業を継続してください。";
+    }
+}

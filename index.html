@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAXI ALERT Pro</title>
+    <meta name="description" content="タクシードライバー特化型 ゲリラ豪雨・特需アラートアプリ">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>TAXI ALERT</h1>
+        <div class="status-indicator">
+            <span id="update-time">更新中...</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 総合ステータス -->
+        <section id="alert-status-card" class="card status-safe">
+            <div class="card-header">
+                <h2>現在の需要ステータス</h2>
+            </div>
+            <div class="card-body">
+                <div id="status-icon" class="status-icon">✅</div>
+                <h3 id="status-message">通常営業・安全圏</h3>
+                <p id="status-detail">現在地周辺で特段の需要増（雨雲など）は予測されていません。</p>
+            </div>
+        </section>
+
+        <!-- 雨雲・特需情報 -->
+        <section class="card data-card">
+            <div class="card-header">
+                <h2>1時間以内の降水予測 (現在地)</h2>
+            </div>
+            <div class="card-body">
+                <div class="weather-data">
+                    <span id="rain-prob" class="data-huge">--%</span>
+                    <span class="data-label">降水確率</span>
+                </div>
+                <div class="weather-details">
+                    <p>予想降水量: <strong id="rain-amount">-- mm/h</strong></p>
+                    <p>現在地: <span id="location-name">取得中...</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 今後の拡張用ダミー -->
+        <section class="card dummy-card">
+            <div class="card-header">
+                <h2>🔔 イベント終了予測 (Beta)</h2>
+            </div>
+            <div class="card-body">
+                <ul class="event-list">
+                    <li><span class="time">22:00</span> <span class="place">東京ドーム</span> <span class="tag">ライブ終了予定</span></li>
+                    <li><span class="time">23:30</span> <span class="place">新宿駅</span> <span class="tag">終電ラッシュ</span></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>

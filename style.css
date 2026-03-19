@@ -1,0 +1,207 @@
+:root {
+    --bg-color: #0d1117;
+    --card-bg: rgba(22, 27, 34, 0.7);
+    --text-main: #e6edf3;
+    --text-sub: #8b949e;
+    --accent-safe: #238636;
+    --accent-warning: #dbab09;
+    --accent-danger: #f85149;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Background */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(35, 134, 54, 0.1), transparent 60%);
+    z-index: -1;
+    pointer-events: none;
+    transition: background 1s ease;
+}
+body.warning-mode::before {
+    background: radial-gradient(circle at 50% 50%, rgba(219, 171, 9, 0.15), transparent 60%);
+}
+body.danger-mode::before {
+    background: radial-gradient(circle at 50% 50%, rgba(248, 81, 73, 0.2), transparent 70%);
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(13, 17, 23, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.app-header h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #fff, #8b949e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.status-indicator {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+}
+
+.container {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header h2 {
+    font-size: 1rem;
+    color: var(--text-sub);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status Card */
+#alert-status-card {
+    text-align: center;
+    padding: 2rem 1.5rem;
+}
+
+.status-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+#status-message {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+#status-detail {
+    font-size: 1rem;
+    color: var(--text-sub);
+}
+
+/* Data Card Styles */
+.weather-data {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.data-huge {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.data-label {
+    font-size: 1.2rem;
+    color: var(--text-sub);
+}
+
+.weather-details p {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Status Colors */
+.status-safe { border-top: 4px solid var(--accent-safe) !important; }
+.status-safe #status-message { color: var(--accent-safe); }
+
+.status-warning {
+    border-top: 4px solid var(--accent-warning) !important;
+    animation: pulse-warning 2s infinite;
+}
+.status-warning #status-message { color: var(--accent-warning); }
+
+.status-danger {
+    border-top: 4px solid var(--accent-danger) !important;
+    animation: pulse-danger 1.5s infinite;
+}
+.status-danger #status-message { color: var(--accent-danger); }
+
+@keyframes pulse-warning {
+    0% { box-shadow: 0 0 0 0 rgba(219, 171, 9, 0.4); }
+    70% { box-shadow: 0 0 20px 10px rgba(219, 171, 9, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(219, 171, 9, 0); }
+}
+
+@keyframes pulse-danger {
+    0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.4); }
+    70% { box-shadow: 0 0 20px 15px rgba(248, 81, 73, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+}
+
+/* List */
+.event-list { list-style: none; }
+.event-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+.event-list li:last-child { border-bottom: none; }
+.event-list .time { font-weight: bold; color: #58a6ff; }
+.event-list .tag {
+    background: rgba(255,255,255,0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.fade-in { animation: fadeIn 0.5s ease-in; }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
