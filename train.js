@@ -36,6 +36,13 @@ function updateTrainDelays() {
                 // カスタムアイコンを使わずにPopupで目立たせます
                 trainMarker = L.marker([delayInfo.lat, delayInfo.lon]).addTo(map)
                     .bindPopup(`<strong style="color:var(--accent-danger); font-size: 1.1em;">🚨 鉄道トラブル発生</strong><br><b>${delayInfo.line}</b><br>${delayInfo.reason}の影響により${delayInfo.status}！<br><a href="${navUrl}" target="_blank" class="nav-btn nav-btn-danger">📍 駅へ急行する</a>`);
+                
+                // 初回ピン生成時に音声アラートも鳴らす
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    if (typeof speakAlert === 'function') {
+                        speakAlert(`緊急トラブルアラートです。${delayInfo.line}が、${delayInfo.reason}の影響により、${delayInfo.status}です。駅周辺でタクシー待ちが大量発生する可能性があります。`);
+                    }
+                }
             }
         }
     } else {

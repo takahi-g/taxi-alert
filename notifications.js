@@ -1,6 +1,21 @@
 // notifications.js
 const notifiedEvents = new Set(); // 通知済みイベントを管理
 
+// 音声を再生する共通関数
+function speakAlert(text) {
+    if ('speechSynthesis' in window) {
+        // 現在喋っている音声をキャンセル
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 1.1; // 運転中でも聞き取れるよう少し早め
+        utterance.pitch = 1.0;
+        
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
 function setupNotificationButton() {
     const notifBtn = document.getElementById('enable-notif-btn');
     if (notifBtn && typeof Notification !== 'undefined') {
@@ -8,16 +23,19 @@ function setupNotificationButton() {
         
         // 既に許可されている場合は見た目を変える
         if (Notification.permission === 'granted') {
-            notifBtn.textContent = '🔔 通知オン';
+            notifBtn.textContent = '🔊 音声・通知オン';
             notifBtn.classList.add('granted');
         }
 
         notifBtn.addEventListener('click', async () => {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
-                notifBtn.textContent = '🔔 通知オン';
+                notifBtn.textContent = '🔊 音声・通知オン';
                 notifBtn.classList.add('granted');
-                new Notification('TAXI ALERT', { body: '通知が有効になりました！イベント30分前にスマホにお知らせします。' });
+                
+                // 初回タップ時に音声APIのロックを解除する（ブラウザ仕様）
+                speakAlert('音声案内とシステム通知を有効にしました。安全運転でお願いします。');
+                new Notification('TAXI ALERT', { body: '通知と音声が有効になりました！' });
             } else {
                 alert('通知がブロックされました。ブラウザの設定から許可してください。');
             }
@@ -58,8 +76,12 @@ function showToast(event, diffMins) {
         toast.classList.add('show');
     }, 100);
 
-    // ✅ もしOS全体（スマホ・PC）の通知が許可されていれば、バックグラウンド通知も送る
+    // ✅ もし通知が許可されていれば、バックグラウンド通知と音声読み上げを行う
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        // 音声の読み上げ
+        speakAlert(`特需アラートです。${event.name}にて、${event.type}があと${diffMins}分で発生します。周辺に向かってください。`);
+
+        // システム通知
         new Notification(`🚕 特需アラート: ${event.name}`, {
             body: `あと${diffMins}分で ${event.type} が発生します！需要が高まります！`,
             icon: 'https://cdn-icons-png.flaticon.com/512/3202/3202926.png'
