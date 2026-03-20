@@ -4,8 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
     updateTime();
+    updateEvents();
     // 1分ごとに時計とデータを更新
-    setInterval(updateTime, 60000);
+    setInterval(() => {
+        updateTime();
+        updateEvents();
+    }, 60000);
     
     // 現在地を取得して天気APIを叩く
     requestLocationAndWeather();
@@ -108,4 +112,71 @@ function updateUI(probability, amount) {
         statusMessage.textContent = "通常営業・安全圏";
         statusDetail.textContent = "現在地周辺で特段の需要増（雨雲など）は予測されていません。通常通り流し営業を継続してください。";
     }
+}
+
+// --- Event Logic ---
+let generatedEvents = null;
+
+function generateEventsOnce() {
+    if (generatedEvents) return generatedEvents;
+    const now = new Date();
+    // デモ用: 現在時刻から25分後、45分後、120分後に特需が発生するように時間を計算
+    generatedEvents = [
+        { name: '東京ドーム周辺', type: 'ライブ終了・帰宅ラッシュ', time: new Date(now.getTime() + 25 * 60000), demand: 'high' },
+        { name: '新宿・歌舞伎町', type: '終電間際ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium' },
+        { name: '六本木交差点', type: '大型イベント終了', time: new Date(now.getTime() + 120 * 60000), demand: 'medium' }
+    ];
+    return generatedEvents;
+}
+
+function updateEvents() {
+    const events = generateEventsOnce();
+    const listEl = document.getElementById('event-list');
+    if (!listEl) return;
+    
+    const now = new Date();
+    listEl.innerHTML = '';
+    
+    // 過去になったイベントは見せない等のロジックも今後追加可能
+    events.forEach(event => {
+        // 残り時間を計算 (分)
+        const diffMs = event.time - now;
+        const diffMins = Math.floor(diffMs / 60000);
+        
+        // 発生済みの場合は非表示
+        if (diffMins < -30) return; // 30分経過したら消す
+
+        const timeString = event.time.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+        
+        const li = document.createElement('li');
+        
+        // 30分以内のイベントは強調表示
+        if (diffMins > 0 && diffMins <= 30) {
+            li.classList.add('event-soon');
+        }
+        
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'time';
+        timeSpan.textContent = timeString;
+        
+        const placeSpan = document.createElement('span');
+        placeSpan.className = 'place';
+        placeSpan.textContent = event.name;
+        
+        const tagSpan = document.createElement('span');
+        tagSpan.className = 'tag evt-' + event.demand;
+        if (diffMins > 0 && diffMins <= 30) {
+            tagSpan.textContent = event.type + ` (あと${diffMins}分!)`;
+        } else if (diffMins <= 0) {
+            tagSpan.textContent = event.type + ` (発生中)`;
+        } else {
+            tagSpan.textContent = event.type;
+        }
+        
+        li.appendChild(timeSpan);
+        li.appendChild(placeSpan);
+        li.appendChild(tagSpan);
+        
+        listEl.appendChild(li);
+    });
 }
