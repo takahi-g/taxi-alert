@@ -57,17 +57,20 @@ function requestLocationAndWeather() {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 document.getElementById('location-name').textContent = `GPS座標 (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
+                initMap(lat, lon);
                 fetchWeather(lat, lon);
             },
             (error) => {
                 console.warn("位置情報の取得に失敗しました。デフォルト位置（博多駅周辺）を使用します。", error);
                 document.getElementById('location-name').textContent = "博多駅周辺 (デフォルト)";
+                initMap(33.5897, 130.4207);
                 fetchWeather(33.5897, 130.4207);
             },
             { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
         );
     } else {
         document.getElementById('location-name').textContent = "博多駅周辺 (デフォルト)";
+        initMap(33.5897, 130.4207);
         fetchWeather(33.5897, 130.4207);
     }
 }
@@ -143,6 +146,32 @@ function updateUI(probability, amount) {
     }
 }
 
+// --- Map Status ---
+let map = null;
+let eventMarkers = [];
+let userMarker = null;
+
+function initMap(lat, lon) {
+    if (!map) {
+        const mapEl = document.getElementById('map');
+        if(!mapEl) return;
+        map = L.map('map').setView([lat, lon], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+    } else {
+        map.setView([lat, lon], 13);
+    }
+    
+    // 現在地マーカー
+    if(userMarker) {
+        userMarker.setLatLng([lat, lon]);
+    } else {
+        userMarker = L.marker([lat, lon]).addTo(map).bindPopup("<b>あなたの現在地</b>").openPopup();
+    }
+}
+
 // --- Event Logic ---
 let generatedEvents = null;
 const notifiedEvents = new Set(); // 通知済みイベントを管理
@@ -150,11 +179,11 @@ const notifiedEvents = new Set(); // 通知済みイベントを管理
 function generateEventsOnce() {
     if (generatedEvents) return generatedEvents;
     const now = new Date();
-    // デモ用: 現在時刻から25分後、45分後、120分後に特需が発生するように時間を計算
+    // デモ用: 現在時刻から25分後、45分後、120分後に特需が発生するように時間を計算し、緯度・経度を設定
     generatedEvents = [
-        { name: 'みずほPayPayドーム福岡', type: 'ライブ終了・帰宅ラッシュ', time: new Date(now.getTime() + 25 * 60000), demand: 'high' },
-        { name: '中洲エリア（那珂川沿い）', type: '飲食層の帰宅ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium' },
-        { name: '天神・大名周辺', type: '大型イベント・終電間際', time: new Date(now.getTime() + 120 * 60000), demand: 'medium' }
+        { name: 'みずほPayPayドーム福岡', type: 'ライブ終了・帰宅ラッシュ', time: new Date(now.getTime() + 25 * 60000), demand: 'high', lat: 33.5953, lon: 130.3621 },
+        { name: '中洲エリア（那珂川沿い）', type: '飲食層の帰宅ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium', lat: 33.5933, lon: 130.4045 },
+        { name: '天神・大名周辺', type: '大型イベント・終電間際', time: new Date(now.getTime() + 120 * 60000), demand: 'medium', lat: 33.5880, lon: 130.3955 }
     ];
     return generatedEvents;
 }
@@ -166,6 +195,12 @@ function updateEvents() {
     
     const now = new Date();
     listEl.innerHTML = '';
+
+    // 古いマーカーをクリア
+    if (map) {
+        eventMarkers.forEach(m => map.removeLayer(m));
+        eventMarkers = [];
+    }
     
     // 過去になったイベントは見せない等のロジックも今後追加可能
     events.forEach(event => {
@@ -175,6 +210,13 @@ function updateEvents() {
         
         // 発生済みの場合は非表示
         if (diffMins < -30) return; // 30分経過したら消す
+
+        // マップへの特需マーカー描画
+        if (map && event.lat && event.lon) {
+            let marker = L.marker([event.lat, event.lon]).addTo(map)
+                .bindPopup(`<strong style="color:var(--text-main)">${event.name}</strong><br>${event.type}<br>あと <strong>${diffMins}分</strong>`);
+            eventMarkers.push(marker);
+        }
 
         const timeString = event.time.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
         

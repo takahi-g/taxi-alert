@@ -251,6 +251,25 @@ body.danger-mode::before {
     padding-left: 0.5rem;
 }
 
+/* Map Overrides */
+#map {
+    width: 100%;
+    z-index: 10;
+}
+.leaflet-container {
+    background: var(--bg-color);
+    font-family: inherit;
+}
+.leaflet-popup-content-wrapper {
+    background: var(--card-bg);
+    color: var(--text-main);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+}
+.leaflet-popup-tip {
+    background: var(--card-bg);
+}
+
 /* Toast Notification */
 .toast-container {
     position: fixed;
