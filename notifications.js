@@ -4,8 +4,9 @@ const notifiedEvents = new Set(); // 通知済みイベントを管理
 // 音声を再生する共通関数
 function speakAlert(text) {
     if ('speechSynthesis' in window) {
-        // 現在喋っている音声をキャンセル
+        // 現在喋っている音声をキャンセルし、iOSバグ対策としてresume()を呼ぶ
         window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ja-JP';
@@ -28,13 +29,21 @@ function setupNotificationButton() {
         }
 
         notifBtn.addEventListener('click', async () => {
+            // 【重要】iOS(iPhone) Safari対策
+            // 非同期処理（await）を挟むと「ユーザーの直接操作」とみなされず音声がブロックされるため、
+            // awaitの前に必ず同期的に一度SpeechSynthesisを実行してOSのロックを解除します。
+            speakAlert('設定を開始します。許可ボタンを押してください。');
+
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 notifBtn.textContent = '🔊 音声・通知オン';
                 notifBtn.classList.add('granted');
                 
-                // 初回タップ時に音声APIのロックを解除する（ブラウザ仕様）
-                speakAlert('音声案内とシステム通知を有効にしました。安全運転でお願いします。');
+                // ロックは解除されているので通知許可後も喋るようになる
+                setTimeout(() => {
+                    speakAlert('通知と音声案内が有効になりました。安全運転でお願いします。');
+                }, 1000); // 先行する「設定を開始します〜」とかぶらないように少し遅らせる
+                
                 new Notification('TAXI ALERT', { body: '通知と音声が有効になりました！' });
             } else {
                 alert('通知がブロックされました。ブラウザの設定から許可してください。');
