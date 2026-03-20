@@ -3,6 +3,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+    // 1. Service Workerの登録 (PWAの要件)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registered'))
+            .catch(err => console.error('Service Worker registration failed:', err));
+    }
+
+    // 2. 通知ボタンの制御
+    const notifBtn = document.getElementById('enable-notif-btn');
+    if (notifBtn && typeof Notification !== 'undefined') {
+        notifBtn.style.display = 'block'; // 通知APIがあるならボタンを表示
+        
+        // 既に許可されている場合は見た目を変える
+        if (Notification.permission === 'granted') {
+            notifBtn.textContent = '🔔 通知オン';
+            notifBtn.classList.add('granted');
+        }
+
+        notifBtn.addEventListener('click', async () => {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                notifBtn.textContent = '🔔 通知オン';
+                notifBtn.classList.add('granted');
+                new Notification('TAXI ALERT', { body: '通知が有効になりました！イベント30分前にスマホにお知らせします。' });
+            } else {
+                alert('通知がブロックされました。ブラウザの設定から許可してください。');
+            }
+        });
+    }
     updateTime();
     updateEvents();
     // 1分ごとに時計とデータを更新
@@ -221,6 +250,14 @@ function showToast(event, diffMins) {
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
+
+    // ✅ もしOS全体（スマホ・PC）の通知が許可されていれば、バックグラウンド通知も送る
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        new Notification(`🚕 特需アラート: ${event.name}`, {
+            body: `あと${diffMins}分で ${event.type} が発生します！需要が高まります！`,
+            icon: 'https://cdn-icons-png.flaticon.com/512/3202/3202926.png'
+        });
+    }
 
     // 10秒後に自動で消える
     setTimeout(() => {

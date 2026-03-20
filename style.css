@@ -71,6 +71,30 @@ body.danger-mode::before {
     color: var(--text-sub);
 }
 
+/* Notif Button */
+.notif-btn {
+    background: rgba(88, 166, 255, 0.2);
+    border: 1px solid #58a6ff;
+    color: #58a6ff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-right: 15px;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+.notif-btn:hover {
+    background: rgba(88, 166, 255, 0.4);
+}
+.notif-btn.granted {
+    background: rgba(35, 134, 54, 0.2);
+    border-color: #238636;
+    color: #238636;
+    cursor: default;
+}
+
 .container {
     padding: 1.5rem;
     display: flex;

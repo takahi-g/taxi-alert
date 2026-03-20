@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TAXI ALERT Pro</title>
     <meta name="description" content="タクシードライバー特化型 ゲリラ豪雨・特需アラートアプリ">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,8 +15,11 @@
 
     <header class="app-header">
         <h1>TAXI ALERT</h1>
-        <div class="status-indicator">
-            <span id="update-time">更新中...</span>
+        <div style="display: flex; align-items: center;">
+            <button id="enable-notif-btn" class="notif-btn" style="display: none;">🔔 通知を許可</button>
+            <div class="status-indicator">
+                <span id="update-time">更新中...</span>
+            </div>
         </div>
     </header>
 
