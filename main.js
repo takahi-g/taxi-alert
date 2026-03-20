@@ -116,6 +116,7 @@ function updateUI(probability, amount) {
 
 // --- Event Logic ---
 let generatedEvents = null;
+const notifiedEvents = new Set(); // 通知済みイベントを管理
 
 function generateEventsOnce() {
     if (generatedEvents) return generatedEvents;
@@ -153,6 +154,13 @@ function updateEvents() {
         // 30分以内のイベントは強調表示
         if (diffMins > 0 && diffMins <= 30) {
             li.classList.add('event-soon');
+            
+            // ポップアップ通知のトリガー
+            const eventId = event.name + "_" + event.time.getTime();
+            if (!notifiedEvents.has(eventId)) {
+                showToast(event, diffMins);
+                notifiedEvents.add(eventId);
+            }
         }
         
         const timeSpan = document.createElement('span');
@@ -179,4 +187,46 @@ function updateEvents() {
         
         listEl.appendChild(li);
     });
+}
+
+// ポップアップ（トースト）表示処理
+function showToast(event, diffMins) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${event.demand}`;
+    
+    // ヘッダー
+    const header = document.createElement('div');
+    header.className = 'toast-header';
+    header.innerHTML = `<span>🔔 特需アラート</span><button class="close-btn">&times;</button>`;
+    
+    // ボディ
+    const body = document.createElement('div');
+    body.className = 'toast-body';
+    body.innerHTML = `あと<strong style="color:var(--text-main);font-size:1.1rem;">${diffMins}分</strong>で<br>「<strong style="color:var(--text-main);">${event.name}</strong>」にて<br>${event.type} が発生します！`;
+
+    toast.appendChild(header);
+    toast.appendChild(body);
+    container.appendChild(toast);
+
+    // 閉じるボタンの処理
+    toast.querySelector('.close-btn').addEventListener('click', () => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    });
+
+    // 少し遅れて表示アニメーション
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+
+    // 10秒後に自動で消える
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 10000);
 }
