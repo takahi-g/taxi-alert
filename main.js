@@ -19,11 +19,13 @@ function initApp() {
     // 3. 初期データの取得と表示
     updateTime();
     if (typeof updateEvents === 'function') updateEvents();
+    if (typeof updateTrainDelays === 'function') updateTrainDelays();
     
     // 4. 定期更新 (1分ごと)
     setInterval(() => {
         updateTime();
         if (typeof updateEvents === 'function') updateEvents();
+        if (typeof updateTrainDelays === 'function') updateTrainDelays();
     }, 60000);
     
     // 5. 現在地を取得して天気APIを叩き、マップも初期化する処理をキック

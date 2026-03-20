@@ -333,3 +333,24 @@ body.danger-mode::before {
     font-size: 0.9rem;
     color: var(--text-sub);
 }
+
+/* Train Emergency Banner */
+.train-banner {
+    background: rgba(248, 81, 73, 0.9);
+    color: white;
+    text-align: center;
+    padding: 0.8rem;
+    font-weight: bold;
+    font-size: 1rem;
+    position: sticky;
+    top: 55px; /* App Headerの直下 */
+    z-index: 99;
+    box-shadow: 0 4px 15px rgba(248, 81, 73, 0.4);
+    animation: flashEmergency 3s infinite;
+    backdrop-filter: blur(8px);
+}
+
+@keyframes flashEmergency {
+    0%, 100% { background: rgba(248, 81, 73, 0.95); }
+    50% { background: rgba(200, 30, 20, 0.85); box-shadow: 0 4px 20px rgba(248, 81, 73, 0.8); }
+}
