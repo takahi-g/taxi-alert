@@ -354,3 +354,29 @@ body.danger-mode::before {
     0%, 100% { background: rgba(248, 81, 73, 0.95); }
     50% { background: rgba(200, 30, 20, 0.85); box-shadow: 0 4px 20px rgba(248, 81, 73, 0.8); }
 }
+
+/* Navigation Button */
+.nav-btn {
+    display: inline-block;
+    background: #238636;
+    color: white !important;
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-align: center;
+    transition: background 0.2s;
+    margin-top: 8px;
+    width: fit-content;
+}
+.nav-btn:hover {
+    background: #2ea043;
+    text-decoration: none;
+}
+.nav-btn.nav-btn-danger {
+    background: var(--accent-danger);
+}
+.nav-btn.nav-btn-danger:hover {
+    background: #c93d36;
+}

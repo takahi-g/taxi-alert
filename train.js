@@ -32,9 +32,10 @@ function updateTrainDelays() {
         // Leafletが初期化されているかどうかの確認
         if (typeof map !== 'undefined' && map) {
             if (!trainMarker) {
+                const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${delayInfo.lat},${delayInfo.lon}`;
                 // カスタムアイコンを使わずにPopupで目立たせます
                 trainMarker = L.marker([delayInfo.lat, delayInfo.lon]).addTo(map)
-                    .bindPopup(`<strong style="color:var(--accent-danger); font-size: 1.1em;">🚨 鉄道トラブル発生</strong><br><b>${delayInfo.line}</b><br>${delayInfo.reason}の影響により${delayInfo.status}！`);
+                    .bindPopup(`<strong style="color:var(--accent-danger); font-size: 1.1em;">🚨 鉄道トラブル発生</strong><br><b>${delayInfo.line}</b><br>${delayInfo.reason}の影響により${delayInfo.status}！<br><a href="${navUrl}" target="_blank" class="nav-btn nav-btn-danger">📍 駅へ急行する</a>`);
             }
         }
     } else {

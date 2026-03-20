@@ -41,8 +41,9 @@ function updateEvents() {
 
         // マップへの特需マーカー描画
         if (typeof map !== 'undefined' && map && event.lat && event.lon) {
+            const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${event.lat},${event.lon}`;
             let marker = L.marker([event.lat, event.lon]).addTo(map)
-                .bindPopup(`<strong style="color:var(--text-main)">${event.name}</strong><br>${event.type}<br>あと <strong>${diffMins}分</strong>`);
+                .bindPopup(`<strong style="color:var(--text-main)">${event.name}</strong><br>${event.type}<br>あと <strong>${diffMins}分</strong><br><a href="${navUrl}" target="_blank" class="nav-btn">📍 ナビ開始</a>`);
             if(typeof eventMarkers !== 'undefined') {
                 eventMarkers.push(marker);
             }
@@ -84,9 +85,24 @@ function updateEvents() {
             tagSpan.textContent = event.type;
         }
         
+        const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${event.lat},${event.lon}`;
+        const navLink = document.createElement('a');
+        navLink.href = navUrl;
+        navLink.target = "_blank";
+        navLink.className = "nav-btn";
+        navLink.style.marginTop = "0.4rem";
+        navLink.textContent = "📍 ナビ";
+
+        const infoDiv = document.createElement('div');
+        infoDiv.style.display = 'flex';
+        infoDiv.style.flexDirection = 'column';
+        infoDiv.style.alignItems = 'flex-end';
+        infoDiv.appendChild(tagSpan);
+        infoDiv.appendChild(navLink);
+
         li.appendChild(timeSpan);
         li.appendChild(placeSpan);
-        li.appendChild(tagSpan);
+        li.appendChild(infoDiv);
         
         listEl.appendChild(li);
     });
