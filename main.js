@@ -31,15 +31,15 @@ function requestLocationAndWeather() {
                 fetchWeather(lat, lon);
             },
             (error) => {
-                console.warn("位置情報の取得に失敗しました。デフォルト位置（東京駅）を使用します。", error);
-                document.getElementById('location-name').textContent = "東京駅周辺 (デフォルト)";
-                fetchWeather(35.6812, 139.7671);
+                console.warn("位置情報の取得に失敗しました。デフォルト位置（博多駅周辺）を使用します。", error);
+                document.getElementById('location-name').textContent = "博多駅周辺 (デフォルト)";
+                fetchWeather(33.5897, 130.4207);
             },
             { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
         );
     } else {
-        document.getElementById('location-name').textContent = "東京駅周辺 (デフォルト)";
-        fetchWeather(35.6812, 139.7671);
+        document.getElementById('location-name').textContent = "博多駅周辺 (デフォルト)";
+        fetchWeather(33.5897, 130.4207);
     }
 }
 
@@ -122,9 +122,9 @@ function generateEventsOnce() {
     const now = new Date();
     // デモ用: 現在時刻から25分後、45分後、120分後に特需が発生するように時間を計算
     generatedEvents = [
-        { name: '東京ドーム周辺', type: 'ライブ終了・帰宅ラッシュ', time: new Date(now.getTime() + 25 * 60000), demand: 'high' },
-        { name: '新宿・歌舞伎町', type: '終電間際ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium' },
-        { name: '六本木交差点', type: '大型イベント終了', time: new Date(now.getTime() + 120 * 60000), demand: 'medium' }
+        { name: 'みずほPayPayドーム福岡', type: 'ライブ終了・帰宅ラッシュ', time: new Date(now.getTime() + 25 * 60000), demand: 'high' },
+        { name: '中洲エリア（那珂川沿い）', type: '飲食層の帰宅ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium' },
+        { name: '天神・大名周辺', type: '大型イベント・終電間際', time: new Date(now.getTime() + 120 * 60000), demand: 'medium' }
     ];
     return generatedEvents;
 }
