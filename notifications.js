@@ -4,15 +4,17 @@ const notifiedEvents = new Set(); // 通知済みイベントを管理
 // 音声を再生する共通関数
 function speakAlert(text) {
     if ('speechSynthesis' in window) {
-        // 現在喋っている音声をキャンセルし、iOSバグ対策としてresume()を呼ぶ
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.resume();
+        window.speechSynthesis.cancel(); // 連続再生のバグ防止
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ja-JP';
-        utterance.rate = 1.1; // 運転中でも聞き取れるよう少し早め
-        utterance.pitch = 1.0;
+        utterance.rate = 1.1; // 少し早め
         
+        // iOS特有のバグ対策：音声リストが存在すれば明示的にセット
+        const voices = window.speechSynthesis.getVoices();
+        const jaVoice = voices.find(v => v.lang.includes('ja') || v.lang.includes('JP'));
+        if (jaVoice) utterance.voice = jaVoice;
+
         window.speechSynthesis.speak(utterance);
     }
 }
@@ -28,26 +30,27 @@ function setupNotificationButton() {
             notifBtn.classList.add('granted');
         }
 
-        notifBtn.addEventListener('click', async () => {
-            // 【重要】iOS(iPhone) Safari対策
-            // 非同期処理（await）を挟むと「ユーザーの直接操作」とみなされず音声がブロックされるため、
-            // awaitの前に必ず同期的に一度SpeechSynthesisを実行してOSのロックを解除します。
-            speakAlert('設定を開始します。許可ボタンを押してください。');
+        // 【重要2】iOSのバグ対策: async/awaitを使わず、純粋な同期関数にする
+        notifBtn.addEventListener('click', function() {
+            // クリックされた瞬間に（1ミリ秒も待たずに）同期的に音声を鳴らす
+            speakAlert('設定を開始します');
 
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                notifBtn.textContent = '🔊 音声・通知オン';
-                notifBtn.classList.add('granted');
-                
-                // ロックは解除されているので通知許可後も喋るようになる
-                setTimeout(() => {
-                    speakAlert('通知と音声案内が有効になりました。安全運転でお願いします。');
-                }, 1000); // 先行する「設定を開始します〜」とかぶらないように少し遅らせる
-                
-                new Notification('TAXI ALERT', { body: '通知と音声が有効になりました！' });
-            } else {
-                alert('通知がブロックされました。ブラウザの設定から許可してください。');
-            }
+            // 非同期で通知の許可ダイアログを出す
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    notifBtn.textContent = '🔊 音声・通知オン';
+                    notifBtn.classList.add('granted');
+                    
+                    // iOSは立て続けの処理を嫌うため2秒後に完了報告
+                    setTimeout(() => {
+                        speakAlert('通知と音声案内が有効になりました。安全運転でお願いします。');
+                    }, 2000); 
+                    
+                    new Notification('TAXI ALERT', { body: '通知と音声が有効になりました！' });
+                } else {
+                    alert('通知がブロックされました。ブラウザの設定から許可してください。');
+                }
+            });
         });
     }
 }
