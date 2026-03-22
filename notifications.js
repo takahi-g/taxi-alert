@@ -8,12 +8,23 @@ function speakAlert(text) {
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'ja-JP';
-        utterance.rate = 1.1; // 少し早め
+        utterance.rate = 1.0; // カタコトになりやすいため標準速度に変更
         
-        // iOS特有のバグ対策：音声リストが存在すれば明示的にセット
+        // より自然な「プレミアム（高音質）音声」が存在すれば優先的に選択する（iOS対策）
         const voices = window.speechSynthesis.getVoices();
-        const jaVoice = voices.find(v => v.lang.includes('ja') || v.lang.includes('JP'));
-        if (jaVoice) utterance.voice = jaVoice;
+        const jaVoices = voices.filter(v => v.lang.includes('ja') || v.lang.includes('JP'));
+        
+        if (jaVoices.length > 0) {
+            // ダウンロードされた可能性のある「O-ren (拡張)」を絶対の最優先に設定
+            const oRenVoice = jaVoices.find(v => v.name.toLowerCase().includes('o-ren') || v.name.includes('オーレン'));
+            const enhancedVoice = jaVoices.find(v => 
+                v.name.includes('Enhanced') || 
+                v.name.includes('拡張') || 
+                v.name.includes('Premium') || 
+                v.name.includes('Siri')
+            );
+            utterance.voice = oRenVoice || enhancedVoice || jaVoices[0];
+        }
 
         window.speechSynthesis.speak(utterance);
     }
