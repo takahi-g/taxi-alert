@@ -68,7 +68,6 @@ function setupNotificationButton() {
                         const selectedVoice = oRenVoice || enhancedVoice || jaVoices[0];
                         if (selectedVoice) selectedName = selectedVoice.name;
                     }
-                    alert("【調査用】ブラウザが認識している日本語音声：\n" + (jaVoices.map(v => v.name).join("\n") || "なし(読込失敗)") + "\n\n【現在選択された音声】\n" + selectedName);
 
                     if (permission === 'granted') {
                         notifBtn.textContent = '🔊 音声・通知オン';
@@ -85,10 +84,6 @@ function setupNotificationButton() {
                     }
                 });
             } else {
-                const voices = window.speechSynthesis.getVoices();
-                const jaVoices = voices.filter(v => v.lang.includes('ja') || v.lang.includes('JP'));
-                alert("【調査用・Safari等】ブラウザが認識している日本語音声：\n" + (jaVoices.map(v => v.name).join("\n") || "なし"));
-
                 notifBtn.textContent = '🔊 音声オン (通知非対応)';
                 notifBtn.classList.add('granted');
                 window.isVoiceEnabledOnly = true; 
