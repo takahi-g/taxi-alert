@@ -1,6 +1,14 @@
 // notifications.js
 const notifiedEvents = new Set(); // 通知済みイベントを管理
 
+// iOSバグ対策: ページ読み込み時点で音声リストの取得を強制的にスタートさせる
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices(); // ロード完了時に再取得
+    };
+}
+
 // 音声を再生する共通関数
 function speakAlert(text) {
     if ('speechSynthesis' in window) {
@@ -48,6 +56,20 @@ function setupNotificationButton() {
 
             // 非同期で通知の許可ダイアログを出す
             Notification.requestPermission().then(function(permission) {
+                
+                // ------ 【デバッグ調査用】iPhoneが認識している音声を画面に表示する ------
+                const voices = window.speechSynthesis.getVoices();
+                const jaVoices = voices.filter(v => v.lang.includes('ja') || v.lang.includes('JP'));
+                let selectedName = "標準(設定なし)";
+                if (jaVoices.length > 0) {
+                    const oRenVoice = jaVoices.find(v => v.name.toLowerCase().includes('o-ren') || v.name.includes('オーレン'));
+                    const enhancedVoice = jaVoices.find(v => v.name.includes('Enhanced') || v.name.includes('拡張') || v.name.includes('Premium') || v.name.includes('Siri'));
+                    const selectedVoice = oRenVoice || enhancedVoice || jaVoices[0];
+                    if (selectedVoice) selectedName = selectedVoice.name;
+                }
+                alert("【調査用】ブラウザが認識している日本語音声：\n" + (jaVoices.map(v => v.name).join("\n") || "なし(読込失敗)") + "\n\n【現在選択された音声】\n" + selectedName);
+                // -------------------------------------------------------------------------
+
                 if (permission === 'granted') {
                     notifBtn.textContent = '🔊 音声・通知オン';
                     notifBtn.classList.add('granted');
