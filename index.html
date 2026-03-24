@@ -19,8 +19,9 @@
         <h1>TAXI ALERT</h1>
         <div style="display: flex; align-items: center; gap: 8px;">
             <button id="enable-notif-btn" class="notif-btn" style="display: none;">🔊 音声・通知を許可</button>
-            <button id="test-night-btn" class="notif-btn" style="background:var(--accent-warning);">🌙 深夜テスト</button>
-            <button id="test-airport-btn" class="notif-btn" style="background:#0071c5;">✈️ 空港テスト</button>
+            <button id="test-night-btn" class="notif-btn" style="background:var(--accent-warning);">🌙 深夜</button>
+            <button id="test-airport-btn" class="notif-btn" style="background:#0071c5;">✈️ 空港</button>
+            <button id="test-countdown-btn" class="notif-btn" style="background:#e91e63;">⌛️ 終了テ</button>
             <div class="status-indicator">
                 <span id="update-time">更新中...</span>
             </div>
@@ -40,6 +41,20 @@
                 <div id="status-icon" class="status-icon">✅</div>
                 <h3 id="status-message">通常営業・安全圏</h3>
                 <p id="status-detail">現在地周辺で特段の需要増（雨雲など）は予測されていません。</p>
+            </div>
+        </section>
+
+        <!-- イベント終了カウントダウン表示 (動的に表示) -->
+        <section id="countdown-card" class="card countdown-card" style="display: none;">
+            <div class="card-header">
+                <h2>⌛️ 次のイベント終了予測</h2>
+            </div>
+            <div class="card-body">
+                <h3 id="cd-event-name">PayPayドーム (ライブ)</h3>
+                <div class="countdown-timer">
+                    <span id="cd-minutes">00</span>:<span id="cd-seconds">00</span>
+                </div>
+                <p id="cd-status-text">まもなく終了。待機ポジションを確保してください！</p>
             </div>
         </section>
 
@@ -89,8 +104,9 @@
     <script src="notifications.js?v=4"></script>
     <script src="events.js?v=4"></script>
     <script src="train.js?v=4"></script>
-    <script src="night_radar.js?v=4"></script>
-    <script src="airport.js?v=4"></script>
-    <script src="main.js?v=4"></script>
+    <script src="night_radar.js?v=5"></script>
+    <script src="airport.js?v=5"></script>
+    <script src="event_countdown.js?v=5"></script>
+    <script src="main.js?v=5"></script>
 </body>
 </html>

@@ -426,3 +426,38 @@ body.night-mode .leaflet-popup-content-wrapper {
 body.night-mode .leaflet-popup-tip {
     background: #111118;
 }
+
+/* =========================================
+   ⌛️ カウントダウンカード
+========================================= */
+.countdown-card {
+    border: 2px solid #e91e63 !important;
+    background: linear-gradient(145deg, rgba(233, 30, 99, 0.1), rgba(13, 17, 23, 0.9)) !important;
+}
+
+.countdown-timer {
+    font-size: 3.5rem;
+    font-weight: 800;
+    font-family: 'Courier New', Courier, monospace;
+    color: #ff5252;
+    text-align: center;
+    margin: 10px 0;
+    letter-spacing: 2px;
+}
+
+.countdown-timer.blink {
+    animation: blink-danger 0.8s infinite;
+}
+
+@keyframes blink-danger {
+    0% { opacity: 1; color: #ff5252; transform: scale(1); }
+    50% { opacity: 0.5; color: #ffffff; transform: scale(1.05); }
+    100% { opacity: 1; color: #ff5252; transform: scale(1); }
+}
+
+#cd-status-text {
+    text-align: center;
+    font-weight: bold;
+    color: var(--accent-warning);
+}
+
