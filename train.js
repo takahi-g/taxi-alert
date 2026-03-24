@@ -1,55 +1,45 @@
 // train.js
-// 鉄道遅延情報のダミーデータ生成と画面表示ロジック
-
-let currentTrainDelay = null;
-let trainMarker = null;
-
-function generateTrainDelay() {
-    // デモ用: 常に固定の遅延トラブルを発生させておく
-    if (!currentTrainDelay) {
-        currentTrainDelay = {
-            line: "JR鹿児島本線",
-            section: "博多〜香椎間",
-            reason: "踏切内安全確認",
-            status: "運転見合わせ",
-            lat: 33.5897, // 博多駅
-            lon: 130.4207
-        };
-    }
-    return currentTrainDelay;
-}
+// 鉄道遅延情報の管理モジュール
+let isTrainDelayActive = false;
 
 function updateTrainDelays() {
-    const delayInfo = generateTrainDelay();
-    const banner = document.getElementById('train-banner');
-    if (!banner) return;
+    // 本来はAPIから取得するが、モックデータを定義
+    const delayInfo = {
+        id: 'train-delay',
+        active: true,
+        title: '⚠️ 鉄道運行情報',
+        body: `JR鹿児島本線（博多〜香椎間）にて、踏切内安全確認の影響で <strong style="color:red;">運転見合わせ</strong>！博多駅にてタクシー需要が急増します。`,
+        soundText: '鉄道運行情報です。JR鹿児島本線が運転見合わせ中です。博多駅にてタクシー需要が急増しています。周辺に向かってください。',
+        lat: 33.5897,
+        lon: 130.4207,
+        popupHtml: `
+            <strong style="color:red; font-size: 1.1em;">⚠️ 運転見合わせ中</strong><br>
+            <b>博多駅 周辺</b><br>
+            JR鹿児島本線の運休により、タクシー乗り場が大混雑しています。<br>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=33.5897,130.4207" target="_blank" class="nav-btn" style="background:#d32f2f;">📍 駅へ向かう</a>
+        `
+    };
 
-    if (delayInfo) {
-        banner.style.display = 'block';
-        banner.innerHTML = `⚠️ <b>${delayInfo.line}</b> (${delayInfo.section}) - ${delayInfo.reason}の影響で <b><span style="color: yellow;">${delayInfo.status}</span></b>！`;
+    const banner = document.getElementById('train-banner');
+
+    if (delayInfo.active && !isTrainDelayActive) {
+        isTrainDelayActive = true;
         
-        // 地図上に電車遅延用のピン（緊急マーカー）を立てる
-        // Leafletが初期化されているかどうかの確認
-        if (typeof map !== 'undefined' && map) {
-            if (!trainMarker) {
-                const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${delayInfo.lat},${delayInfo.lon}`;
-                // カスタムアイコンを使わずにPopupで目立たせます
-                trainMarker = L.marker([delayInfo.lat, delayInfo.lon]).addTo(map)
-                    .bindPopup(`<strong style="color:var(--accent-danger); font-size: 1.1em;">🚨 鉄道トラブル発生</strong><br><b>${delayInfo.line}</b><br>${delayInfo.reason}の影響により${delayInfo.status}！<br><a href="${navUrl}" target="_blank" class="nav-btn nav-btn-danger">📍 駅へ急行する</a>`);
-                
-                // 初回ピン生成時に音声アラートも鳴らす
-                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                    if (typeof speakAlert === 'function') {
-                        speakAlert(`緊急トラブルアラートです。${delayInfo.line}が、${delayInfo.reason}の影響により、${delayInfo.status}です。駅周辺でタクシー待ちが大量発生する可能性があります。`);
-                    }
-                }
-            }
+        // 共通アラート機能の呼び出し
+        if (typeof displayEmergencyAlert === 'function') {
+            displayEmergencyAlert(delayInfo);
         }
-    } else {
-        banner.style.display = 'none';
-        if (trainMarker && typeof map !== 'undefined' && map) {
-            map.removeLayer(trainMarker);
-            trainMarker = null;
+
+        // 上部のスクロールバナーも表示
+        if (banner) {
+            banner.innerHTML = `⚠️ <b>JR鹿児島本線</b> (博多〜香椎間) - 踏切内安全確認の影響で <b><span style="color: yellow;">運転見合わせ</span></b>！`;
+            banner.style.display = 'block';
         }
+    } else if (!delayInfo.active && isTrainDelayActive) {
+        isTrainDelayActive = false;
+        if (typeof removeEmergencyAlert === 'function') {
+            removeEmergencyAlert('train-delay');
+        }
+        if (banner) banner.style.display = 'none';
     }
 }

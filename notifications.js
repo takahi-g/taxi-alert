@@ -154,3 +154,63 @@ function showToast(event, diffMins) {
         }
     }, 10000);
 }
+
+/**
+ * 📢 リファクタリング：緊急アラート（トースト・音声・マップ連動）を一括管理
+ */
+let activeEmergencyMarkers = {}; // IDごとにマーカーを管理
+
+function displayEmergencyAlert(config) {
+    const { id, title, body, soundText, lat, lon, popupHtml, toastClass = 'danger' } = config;
+
+    // 1. マップ連動
+    if (typeof map !== 'undefined' && map && lat && lon) {
+        // 既存の同じIDのマーカーがあれば削除
+        if (activeEmergencyMarkers[id]) {
+            map.removeLayer(activeEmergencyMarkers[id]);
+        }
+
+        const marker = L.marker([lat, lon]).addTo(map)
+            .bindPopup(popupHtml || `<b>${title}</b><br>${body}`);
+        
+        activeEmergencyMarkers[id] = marker;
+        map.setView([lat, lon], 14);
+        marker.openPopup();
+    }
+
+    // 2. 音声読み上げ
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted' || window.isVoiceEnabledOnly) {
+        speakAlert(soundText || body);
+    }
+
+    // 3. トースト通知
+    const container = document.getElementById('toast-container');
+    if (container) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${toastClass}`;
+        toast.innerHTML = `
+            <div class="toast-header"><span>${title}</span><button class="close-btn">&times;</button></div>
+            <div class="toast-body">${body}</div>
+        `;
+        container.appendChild(toast);
+        toast.querySelector('.close-btn').addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        });
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, 12000);
+    }
+}
+
+function removeEmergencyAlert(id) {
+    if (activeEmergencyMarkers[id] && typeof map !== 'undefined' && map) {
+        map.removeLayer(activeEmergencyMarkers[id]);
+        delete activeEmergencyMarkers[id];
+    }
+}
+
