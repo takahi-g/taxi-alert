@@ -380,3 +380,49 @@ body.danger-mode::before {
 .nav-btn.nav-btn-danger:hover {
     background: #c93d36;
 }
+
+/* =========================================
+   🌙 深夜（サイバーネオン）モード
+========================================= */
+body.night-mode {
+    background-color: #030308;
+    color: #e6e6e6;
+}
+
+body.night-mode .app-header {
+    background: rgba(5, 5, 12, 0.95);
+    border-bottom: 1px solid #8a2be2;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
+}
+
+body.night-mode h1 {
+    color: #dfb6ff;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.8), 0 0 20px rgba(138, 43, 226, 0.4);
+}
+
+body.night-mode .card {
+    background: rgba(10, 10, 20, 0.85);
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    box-shadow: inset 0 0 10px rgba(138, 43, 226, 0.1), 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+body.night-mode .card-header h2 {
+    color: #dfb6ff;
+    text-shadow: 0 0 5px rgba(138, 43, 226, 0.6);
+}
+
+body.night-mode .event-list li {
+    background: rgba(15, 15, 25, 0.9);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+}
+
+/* マップポップアップのダーク化 */
+body.night-mode .leaflet-popup-content-wrapper {
+    background: #111118;
+    color: #e6e6e6;
+    border: 1px solid #8a2be2;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+}
+body.night-mode .leaflet-popup-tip {
+    background: #111118;
+}

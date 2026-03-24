@@ -17,8 +17,9 @@
 
     <header class="app-header">
         <h1>TAXI ALERT</h1>
-        <div style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;">
             <button id="enable-notif-btn" class="notif-btn" style="display: none;">🔊 音声・通知を許可</button>
+            <button id="test-night-btn" class="notif-btn" style="background:var(--accent-warning);">🌙 深夜テスト</button>
             <div class="status-indicator">
                 <span id="update-time">更新中...</span>
             </div>
@@ -82,11 +83,12 @@
         </section>
     </main>
 
-    <script src="weather.js?v=2"></script>
-    <script src="map.js?v=2"></script>
-    <script src="notifications.js?v=2"></script>
-    <script src="events.js?v=2"></script>
-    <script src="train.js?v=2"></script>
-    <script src="main.js?v=2"></script>
+    <script src="weather.js?v=3"></script>
+    <script src="map.js?v=3"></script>
+    <script src="notifications.js?v=3"></script>
+    <script src="events.js?v=3"></script>
+    <script src="train.js?v=3"></script>
+    <script src="night_radar.js?v=3"></script>
+    <script src="main.js?v=3"></script>
 </body>
 </html>
