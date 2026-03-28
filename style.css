@@ -461,3 +461,36 @@ body.night-mode .leaflet-popup-tip {
     color: var(--accent-warning);
 }
 
+.eta-info {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+/* =========================================
+   🚕 出発推奨アラート
+========================================= */
+.departure-alert {
+    border: 3px solid var(--accent-warning) !important;
+    animation: departure-flash 1.5s infinite !important;
+    background: linear-gradient(145deg, rgba(219, 171, 9, 0.2), rgba(13, 17, 23, 0.9)) !important;
+}
+
+@keyframes departure-flash {
+    0% { border-color: var(--accent-warning); box-shadow: 0 0 10px var(--accent-warning); }
+    50% { border-color: #fff; box-shadow: 0 0 25px var(--accent-warning); }
+    100% { border-color: var(--accent-warning); box-shadow: 0 0 10px var(--accent-warning); }
+}
+
+.departure-alert .eta-info {
+    background: var(--accent-warning);
+    color: #000;
+    font-weight: bold;
+    border: none;
+}
+
