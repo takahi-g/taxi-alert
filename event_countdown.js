@@ -7,11 +7,11 @@ let departureAlertSent = false;
 
 const sampleEvent = {
     id: 'event-end',
-    name: "PayPayドーム (大型ライブ)",
-    lat: 33.5954,
-    lon: 130.3622,
-    locationName: "PayPayドーム周辺",
-    message: "ライブが終了しました！約3万人の観客が一斉に退場を開始しました。タクシー需要が爆発しています！"
+    name: "九州国立博物館 (特別展)",
+    lat: 33.5181,
+    lon: 130.5376,
+    locationName: "九州国立博物館・太宰府天満宮周辺",
+    message: "特別展が終了しました！大量の来館者が一斉に帰路についています。二日市駅方面へのタクシー需要が爆発しています！"
 };
 
 /**
@@ -66,8 +66,8 @@ function startCountdown(durationSeconds) {
 
         // 現在地取得 (weather.js 等で取得済みの位置情報があればそれを使う、なければデフォルト)
         // ここでは一旦デモ用に適当な現在地を設定（本来は navigator.geolocation で取得）
-        const currentLat = 33.5897; // 博多駅
-        const currentLon = 130.4207;
+        const currentLat = 33.5002; // JR二日市駅
+        const currentLon = 130.5168;
         
         const dist = calculateDistance(currentLat, currentLon, sampleEvent.lat, sampleEvent.lon);
         const etaMin = getDrivingETA(dist);
@@ -134,7 +134,7 @@ function finishCountdown() {
             id: 'event-end-alert',
             title: '🎉 イベント終了・特需発生',
             body: `「${sampleEvent.name}」終了！3万人の退場が始まりました！`,
-            soundText: `イベント終了アラートです。${sampleEvent.name}が終了しました。約3万人の観客が一斉に退場を開始しました。タクシー需要が爆発しています。今すぐドーム周辺へ向かってください！`,
+            soundText: `イベント終了アラートです。${sampleEvent.name}が終了しました。大量の来館者が一斉に退場を開始しました。タクシー需要が爆発しています。今すぐ博物館周辺へ向かってください！`,
             lat: sampleEvent.lat,
             lon: sampleEvent.lon,
             popupHtml: `
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 testBtn.textContent = '⌛️ 終了テスト';
                 testBtn.style.background = '#e91e63';
             } else {
-                // テスト用に、10分(600秒)のカウントダウンを開始（博多駅→ドームは約5.5km、ETA約11分なので即アラート対象になるはず）
+                // テスト用に、10分(600秒)のカウントダウンを開始（JR二日市駅→九博は約3km、ETA約6分。10分-6分=4分でバッファ5分以内なので即アラート）
                 startCountdown(600);
                 testBtn.textContent = '⏹ 停止';
                 testBtn.style.background = 'var(--text-main)';

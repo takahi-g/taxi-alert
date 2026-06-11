@@ -13,17 +13,17 @@ function requestLocationAndWeather() {
                 fetchWeather(lat, lon);
             },
             (error) => {
-                console.warn("位置情報の取得に失敗しました。デフォルト位置（博多駅周辺）を使用します。", error);
-                document.getElementById('location-name').textContent = "博多駅周辺 (デフォルト)";
-                if (typeof initMap === 'function') initMap(33.5897, 130.4207);
-                fetchWeather(33.5897, 130.4207);
+                console.warn("位置情報の取得に失敗しました。デフォルト位置（JR二日市駅周辺）を使用します。", error);
+                document.getElementById('location-name').textContent = "JR二日市駅周辺 (デフォルト)";
+                if (typeof initMap === 'function') initMap(33.5002, 130.5168);
+                fetchWeather(33.5002, 130.5168);
             },
             { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
         );
     } else {
-        document.getElementById('location-name').textContent = "博多駅周辺 (デフォルト)";
-        if (typeof initMap === 'function') initMap(33.5897, 130.4207);
-        fetchWeather(33.5897, 130.4207);
+        document.getElementById('location-name').textContent = "JR二日市駅周辺 (デフォルト)";
+        if (typeof initMap === 'function') initMap(33.5002, 130.5168);
+        fetchWeather(33.5002, 130.5168);
     }
 }
 

@@ -7,15 +7,15 @@ let nightAlertNotified = false;
 const lastTrainData = {
     id: 'night-radar',
     title: '🌙 深夜特需アラート',
-    body: `あと<strong style="color:#dfb6ff;font-size:1.1rem;">わずか</strong>で 「天神駅周辺」 にて 終電間際の大混雑 が発生します！`,
-    soundText: '深夜特需レーダーが反応しました。天神駅周辺で、まもなく終電です。周辺に向かってください。',
-    lat: 33.5901,
-    lon: 130.3986,
+    body: `あと<strong style="color:#dfb6ff;font-size:1.1rem;">わずか</strong>で 「西鉄二日市〜JR二日市間」 にて 終電間際の大混雑 が発生します！`,
+    soundText: '深夜特需レーダーが反応しました。二日市駅周辺で、まもなく終電です。飲み屋街周辺に向かってください。',
+    lat: 33.5002,
+    lon: 130.5168,
     popupHtml: `
         <strong style="color:#dfb6ff; font-size: 1.2em;">🌙 深夜特需アラート</strong><br>
-        <b>天神駅周辺 (地下鉄/西鉄)</b><br>
-        まもなく終電です。飲み屋街から自宅へ向かう長距離客が急増します！<br>
-        <a href="https://www.google.com/maps/dir/?api=1&destination=33.5901,130.3986" target="_blank" class="nav-btn" style="background:#8a2be2;">📍 現場へ急行する</a>
+        <b>西鉄二日市〜JR二日市間の飲み屋街</b><br>
+        まもなく終電です。スナックや居酒屋から自宅へ向かう客が急増します！<br>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=33.5002,130.5168" target="_blank" class="nav-btn" style="background:#8a2be2;">📍 現場へ急行する</a>
     `
 };
 
