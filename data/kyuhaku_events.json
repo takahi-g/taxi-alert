@@ -1,0 +1,16 @@
+{
+  "id": "kyuhaku-auto",
+  "name": "開催中の特別展",
+  "location": "九州国立博物館",
+  "lat": 33.5181,
+  "lon": 130.5376,
+  "period": {
+    "start": "",
+    "end": ""
+  },
+  "closingTimes": {
+    "default": "17:00",
+    "saturday": "19:00"
+  },
+  "updatedAt": "2026-06-11T20:10:45.536Z"
+}
