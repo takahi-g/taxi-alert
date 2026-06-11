@@ -14,8 +14,37 @@ function generateEventsOnce() {
     return generatedEvents;
 }
 
-function updateEvents() {
-    const events = generateEventsOnce();
+async function fetchAutoEvents() {
+    try {
+        const response = await fetch('data/kyuhaku_events.json');
+        if (!response.ok) return [];
+        const data = await response.json();
+        
+        // 閉館時間を計算 (土曜なら19時、それ以外は17時)
+        const now = new Date();
+        const eventTime = new Date();
+        const isSaturday = now.getDay() === 6;
+        eventTime.setHours(isSaturday ? 19 : 17, 0, 0, 0);
+
+        return [{
+            name: data.name,
+            type: '博物館 閉館ラッシュ',
+            time: eventTime,
+            demand: 'high',
+            lat: data.lat,
+            lon: data.lon,
+            isAuto: true
+        }];
+    } catch (e) {
+        return [];
+    }
+}
+
+async function updateEvents() {
+    const autoEvents = await fetchAutoEvents();
+    const mockEvents = generateEventsOnce();
+    const events = [...autoEvents, ...mockEvents];
+    
     const listEl = document.getElementById('event-list');
     if (!listEl) return;
     

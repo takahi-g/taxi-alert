@@ -170,10 +170,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isCountdownActive) {
                 stopCountdown();
                 testBtn.textContent = '⌛️ 終了テスト';
-                testBtn.style.background = '#e91e63';
+                testBtn.style.background = '#238636';
             } else {
-                // テスト用に、10分(600秒)のカウントダウンを開始（JR二日市駅→九博は約3km、ETA約6分。10分-6分=4分でバッファ5分以内なので即アラート）
-                startCountdown(600);
+                // 自動判定ロジック：今日が土曜なら19時、それ以外なら17時を目指す
+                const now = new Date();
+                const targetTime = new Date();
+                const isSaturday = now.getDay() === 6;
+                targetTime.setHours(isSaturday ? 19 : 17, 0, 0, 0);
+
+                let diffSec = Math.floor((targetTime - now) / 1000);
+                
+                // もし既に閉館時間を過ぎていたら、デモ用に10分(600秒)にする
+                if (diffSec <= 0) {
+                    diffSec = 600;
+                }
+
+                startCountdown(diffSec);
                 testBtn.textContent = '⏹ 停止';
                 testBtn.style.background = 'var(--text-main)';
             }

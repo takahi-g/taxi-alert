@@ -1,0 +1,32 @@
+name: Daily Kyushu Museum Scrape
+
+on:
+  schedule:
+    # 毎日 日本時間 深夜3:00 (UTC 18:00) に実行
+    - cron: '0 18 * * *'
+  workflow_dispatch: # 手動実行も可能にする
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # リポジトリへの書き込み権限を付与
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Scraper
+        run: node scrape_kyuhaku.js
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update: Kyushu Museum Event Info [skip ci]"
+          file_pattern: 'data/kyuhaku_events.json'
