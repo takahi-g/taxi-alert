@@ -8,8 +8,8 @@ function generateEventsOnce() {
     // デモ用: 現在時刻から25分後、45分後、120分後に特需が発生するように時間を計算し、緯度・経度を設定
     generatedEvents = [
         { name: '太宰府天満宮・表参道', type: '観光客帰宅ラッシュ', time: new Date(now.getTime() + 25 * 60000), demand: 'high', lat: 33.5215, lon: 130.5349 },
-        { name: '二日市温泉街周辺', type: '夕食・外出ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium', lat: 33.4947, lon: 130.5125 },
-        { name: 'イオンモール筑紫野', type: '週末の買い物客帰宅ラッシュ', time: new Date(now.getTime() + 120 * 60000), demand: 'medium', lat: 33.4839, lon: 130.5216 }
+        { name: '二日市温泉街周辺', type: '夕食・外出ピーク', time: new Date(now.getTime() + 45 * 60000), demand: 'medium', lat: 33.4926, lon: 130.5127 },
+        { name: 'イオンモール筑紫野', type: '週末の買い物客帰宅ラッシュ', time: new Date(now.getTime() + 120 * 60000), demand: 'medium', lat: 33.4817055, lon: 130.5255191 }
     ];
     return generatedEvents;
 }

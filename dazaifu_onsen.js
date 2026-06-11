@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         title: '♨️ 二日市温泉 送迎ラッシュ',
                         body: '温泉街の各旅館でチェックアウト・移動ラッシュ開始！',
                         soundText: '二日市温泉街からの配車要請が増加しています。大観荘などの老舗旅館付近へ向かってください。',
-                        lat: 33.4947, // 二日市温泉街付近
-                        lon: 130.5125,
+                        lat: 33.4926, // アイビーホテル筑紫野付近
+                        lon: 130.5127,
                         toastClass: 'warning',
                         popupHtml: `
                             <b style="color:#0071c5;">♨️ 温泉街特需</b><br>
