@@ -14,6 +14,22 @@ const sampleEvent = {
     message: "特別展が終了しました！大量の来館者が一斉に帰路についています。二日市駅方面へのタクシー需要が爆発しています！"
 };
 
+// 自動取得した展覧会名に更新する
+async function updateCountdownEventName() {
+    try {
+        const response = await fetch('data/kyuhaku_events.json');
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.name) {
+            sampleEvent.name = data.name;
+            const eventNameEl = document.getElementById('cd-event-name');
+            if (eventNameEl) eventNameEl.textContent = data.name;
+        }
+    } catch (e) {
+        // 失敗した場合はデフォルトのまま
+    }
+}
+
 /**
  * 2地点間の直線距離を計算 (km/Haversine)
  */
@@ -164,6 +180,7 @@ function stopCountdown() {
 
 // テストボタンのイベント登録
 document.addEventListener('DOMContentLoaded', () => {
+    updateCountdownEventName(); // 起動時に展覧会名を更新
     const testBtn = document.getElementById('test-countdown-btn');
     if (testBtn) {
         testBtn.addEventListener('click', () => {
