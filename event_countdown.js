@@ -14,16 +14,32 @@ const sampleEvent = {
     message: "特別展が終了しました！大量の来館者が一斉に帰路についています。二日市駅方面へのタクシー需要が爆発しています！"
 };
 
-// 自動取得した展覧会名に更新する
+// 自動取得した展覧会名に更新し、カウントダウンを自動開始する
 async function updateCountdownEventName() {
     try {
         const response = await fetch('data/kyuhaku_events.json');
         if (!response.ok) return;
         const data = await response.json();
+        
         if (data.name) {
             sampleEvent.name = data.name;
             const eventNameEl = document.getElementById('cd-event-name');
             if (eventNameEl) eventNameEl.textContent = data.name;
+
+            // --- 自動開始ロジックを追加 ---
+            const now = new Date();
+            const targetTime = new Date();
+            const isSaturday = now.getDay() === 6;
+            // 九博のルール：土曜19時、それ以外17時
+            targetTime.setHours(isSaturday ? 19 : 17, 0, 0, 0);
+
+            let diffSec = Math.floor((targetTime - now) / 1000);
+            
+            // 閉館まで残り3時間（10800秒）以内、かつまだ閉館前なら自動表示
+            if (diffSec > 0 && diffSec <= 10800) {
+                startCountdown(diffSec);
+            }
+            // --------------------------
         }
     } catch (e) {
         // 失敗した場合はデフォルトのまま
