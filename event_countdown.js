@@ -17,32 +17,45 @@ const sampleEvent = {
 // 自動取得した展覧会名に更新し、カウントダウンを自動開始する
 async function updateCountdownEventName() {
     try {
-        const response = await fetch('data/kyuhaku_events.json');
-        if (!response.ok) return;
-        const data = await response.json();
+        console.log("Loading museum data from data/kyuhaku_events.json...");
+        const response = await fetch('./data/kyuhaku_events.json?t=' + Date.now());
         
-        if (data.name) {
-            sampleEvent.name = data.name;
-            const eventNameEl = document.getElementById('cd-event-name');
-            if (eventNameEl) eventNameEl.textContent = data.name;
+        let targetName = sampleEvent.name;
 
-            // --- 自動開始ロジックを追加 ---
-            const now = new Date();
-            const targetTime = new Date();
-            const isSaturday = now.getDay() === 6;
-            // 九博のルール：土曜19時、それ以外17時
-            targetTime.setHours(isSaturday ? 19 : 17, 0, 0, 0);
-
-            let diffSec = Math.floor((targetTime - now) / 1000);
-            
-            // 閉館まで残り3時間（10800秒）以内、かつまだ閉館前なら自動表示
-            if (diffSec > 0 && diffSec <= 10800) {
-                startCountdown(diffSec);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.name) {
+                targetName = data.name;
+                sampleEvent.name = data.name;
             }
-            // --------------------------
+        } else {
+            console.warn("Museum data not found (404). Using default name.");
+        }
+
+        const eventNameEl = document.getElementById('cd-event-name');
+        if (eventNameEl) eventNameEl.textContent = targetName;
+
+        // --- 自動開始ロジック ---
+        const now = new Date();
+        const targetTime = new Date();
+        const isSaturday = now.getDay() === 6;
+        targetTime.setHours(isSaturday ? 19 : 17, 0, 0, 0);
+
+        let diffSec = Math.floor((targetTime - now) / 1000);
+        
+        // 閉館まで残り5時間（18000秒）以内であれば自動表示するように判定を広げました
+        if (diffSec > 0 && diffSec <= 18000) {
+            console.log("Auto-starting countdown. Seconds remaining:", diffSec);
+            startCountdown(diffSec);
         }
     } catch (e) {
-        // 失敗した場合はデフォルトのまま
+        console.error("Failed to load museum data:", e);
+        // エラーでもカウントダウンだけは試みる
+        const now = new Date();
+        const targetTime = new Date();
+        targetTime.setHours(now.getDay() === 6 ? 19 : 17, 0, 0, 0);
+        let diffSec = Math.floor((targetTime - now) / 1000);
+        if (diffSec > 0 && diffSec <= 18000) startCountdown(diffSec);
     }
 }
 
