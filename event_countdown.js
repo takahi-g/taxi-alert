@@ -207,9 +207,15 @@ function stopCountdown() {
     }
 }
 
-// テストボタンのイベント登録
+// ---------------------------------------------------
+// スクリプト読み込み時に即座に実行開始
+// ---------------------------------------------------
+
+// 1. まずイベント名を更新し、条件が合えば自動でカウントダウンを開始
+updateCountdownEventName();
+
+// 2. ボタン等のイベント登録
 document.addEventListener('DOMContentLoaded', () => {
-    updateCountdownEventName(); // 起動時に展覧会名を更新
     const testBtn = document.getElementById('test-countdown-btn');
     if (testBtn) {
         testBtn.addEventListener('click', () => {
@@ -218,20 +224,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 testBtn.textContent = '⌛️ 終了テスト';
                 testBtn.style.background = '#238636';
             } else {
-                // 自動判定ロジック：今日が土曜なら19時、それ以外なら17時を目指す
+                console.log("Test button clicked. Manual start.");
                 const now = new Date();
                 const targetTime = new Date();
                 const isSaturday = now.getDay() === 6;
                 targetTime.setHours(isSaturday ? 19 : 17, 0, 0, 0);
 
                 let diffSec = Math.floor((targetTime - now) / 1000);
-                
-                // もし既に閉館時間を過ぎていたら、デモ用に10分(600秒)にする
-                if (diffSec <= 0) {
-                    diffSec = 600;
-                }
-
+                if (diffSec <= 0) diffSec = 600;
                 startCountdown(diffSec);
+                
                 testBtn.textContent = '⏹ 停止';
                 testBtn.style.background = 'var(--text-main)';
             }
