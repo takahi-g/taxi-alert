@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 九博の特別展スケジュールページ
-const TARGET_URL = 'https://www.kyuhaku.jp/exhibition/exhibition_s.html';
+const TARGET_URL = 'https://www.kyuhaku.jp/exhibition/exhibition_now.html';
 
 async function scrapeKyuhaku() {
     console.log('Fetching Kyushu National Museum info...');
@@ -14,12 +14,21 @@ async function scrapeKyuhaku() {
         const response = await fetch(TARGET_URL);
         const html = await response.text();
 
-        // 特別展のタイトルを抽出 (HTML構造に依存するため、簡易的な正規表現を使用)
-        // 実際には <h3 class="ex_title">展覧会名</h3> のような形を想定
-        const titleMatch = html.match(/<h3[^>]*>(.*?)<\/h3>/) || html.match(/<h2[^>]*>(.*?)<\/h2>/);
-        const exhibitionTitle = titleMatch ? titleMatch[1].replace(/<br[^>]*>/g, ' ').trim() : '開催中の特別展';
+        // 特別展を探す (ex_title クラス)
+        let name = '';
+        const specialMatch = html.match(/<h3 class="ex_title">([\s\S]*?)<\/h3>/i);
+        
+        if (specialMatch) {
+            name = specialMatch[1].replace(/<[^>]*>/g, '').trim();
+        } else {
+            // 特別展がない場合、特集展示などを探す
+            const generalMatch = html.match(/<h4[^>]*>([\s\S]*?)<\/h4>/i);
+            name = generalMatch ? generalMatch[1].replace(/<[^>]*>/g, '').trim() : '現在は平常展のみ (次は7/18〜氷河期展)';
+        }
 
-        // 開催期間を抽出 (例: 2026年4月1日〜6月1日)
+        const exhibitionTitle = name;
+
+        // 開催期間を抽出 (例: 2024年1月1日〜3月31日)
         const dateMatch = html.match(/(\d{4}年\d{1,2}月\d{1,2}日).*?(\d{4}年\d{1,2}月\d{1,2}日)/);
         const startDate = dateMatch ? dateMatch[1] : '';
         const endDate = dateMatch ? dateMatch[2] : '';
